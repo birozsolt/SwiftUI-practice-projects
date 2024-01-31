@@ -17,14 +17,16 @@ struct ContentView: View {
     var totalPerPerson: Double {
         totalCheckAmount / Double(numberOfPeople)
     }
-    
+
+    private let localeCurrencyCode = Locale.current.currency?.identifier ?? "USD"
+
     var body: some View {
         NavigationView {
             Form {
                 Section {
                     TextField("Amount",
                               value: $checkAmount,
-                              format: .currency(code: Locale.current.currencyCode ?? "USD")
+                              format: .currency(code: localeCurrencyCode)
                     )
                     .keyboardType(.decimalPad)
                     .focused($amountKeyboardIsFocused)
@@ -42,19 +44,20 @@ struct ContentView: View {
                             Text($0, format: .percent)
                         }
                     }
+                    .pickerStyle(.navigationLink)
                 } header: {
                     Text("How much percentage do you tip?")
                 }
                 
                 Section {
-                    Text(totalCheckAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    Text(totalCheckAmount, format: .currency(code: localeCurrencyCode))
                         .foregroundColor(tipPercentage == 0 ? .red : .black)
                 } header: {
                     Text("Total check amount")
                 }
                 
                 Section {
-                    Text(totalPerPerson, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    Text(totalPerPerson, format: .currency(code: localeCurrencyCode))
                 } header: {
                     Text("Amount per person")
                 }
@@ -62,9 +65,7 @@ struct ContentView: View {
             .navigationTitle("WeSplit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    
+                if amountKeyboardIsFocused {
                     Button("Done") {
                         amountKeyboardIsFocused = false
                     }
